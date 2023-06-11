@@ -1,41 +1,43 @@
+
 import { galleryItems } from './gallery-items.js';
 
 const gallery = document.querySelector('.gallery');
 
-function createGalleryItem(item) {
-  const galleryItem = document.createElement('li');
-  galleryItem.classList.add('gallery__item');
+const createGalleryItem = ({ preview, original, description }) => {
+  return `
+    <li class="gallery__item">
+      <a class="gallery__link" href="${original}">
+        <img
+          class="gallery__image"
+          src="${preview}"
+          data-source="${original}"
+          alt="${description}"
+        />
+      </a>
+    </li>
+  `;
+};
 
-  const link = document.createElement('a');
-  link.classList.add('gallery__link');
-  link.href = item.original;
+const renderGallery = (galleryItems) => {
+  const galleryMarkup = galleryItems
+    .map((item) => createGalleryItem(item))
+    .join('');
 
-  const image = document.createElement('img');
-  image.classList.add('gallery__image');
-  image.src = item.preview;
-  image.setAttribute('data-source', item.original);
-  image.alt = item.description;
+  gallery.innerHTML = galleryMarkup;
+};
 
-  link.appendChild(image);
-  galleryItem.appendChild(link);
+renderGallery(galleryItems);
 
-  return galleryItem;
-}
+gallery.addEventListener('click', (event) => {
+  event.preventDefault();
 
-function openModal(url) {
-  const instance = basicLightbox.create(`
-    <img src="${url}" width="800" height="600">
-  `);
+  if (event.target.classList.contains('gallery__image')) {
+    const largeImageUrl = event.target.dataset.source;
 
-  instance.show();
-}
+    const instance = basicLightbox.create(`
+      <img src="${largeImageUrl}" alt="" />
+    `);
 
-galleryItems.forEach((item) => {
-  const galleryItem = createGalleryItem(item);
-  galleryItem.addEventListener('click', (e) => {
-    e.preventDefault();
-    const imageUrl = item.original;
-    openModal(imageUrl);
-  });
-  gallery.appendChild(galleryItem);
+    instance.show();
+  }
 });

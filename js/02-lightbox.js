@@ -1,33 +1,20 @@
+
 import { galleryItems } from './gallery-items.js';
 
-const gallery = document.querySelector('.gallery');
+const createGalleryItem = ({ preview, original, description }) => `
+  <li class="gallery__item">
+    <a class="gallery__link" href="${original}">
+      <img class="gallery__image" src="${preview}" alt="${description}" />
+    </a>
+  </li>
+`;
 
-function createGalleryItem(item) {
-  const galleryItem = document.createElement('li');
-  galleryItem.classList.add('gallery__item');
+const createGalleryItemsMarkup = items => items.map(createGalleryItem).join('');
 
-  const link = document.createElement('a');
-  link.classList.add('gallery__link');
-  link.href = item.original;
+const galleryContainer = document.querySelector('.gallery');
+galleryContainer.innerHTML = createGalleryItemsMarkup(galleryItems);
 
-  const image = document.createElement('img');
-  image.classList.add('gallery__image');
-  image.src = item.preview;
-  image.alt = item.description;
-
-  link.appendChild(image);
-  galleryItem.appendChild(link);
-
-  return galleryItem;
-}
-
-galleryItems.forEach((item) => {
-  const galleryItem = createGalleryItem(item);
-  gallery.appendChild(galleryItem);
-});
-
-// Ініціалізація SimpleLightbox
 const lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
+  captions: true,
   captionDelay: 250,
 });
